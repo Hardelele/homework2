@@ -7,8 +7,7 @@ public class Homework {
     public static void main(String[] args) {
         final String processingFileName = getProcessingFileName(args);
         final String resultFileName = getResultFileName(args);
-        new FileProcessor()
-                .process(processingFileName, resultFileName);
+        new FileProcessor().process(processingFileName, resultFileName);
     }
 
     @Nonnull
