@@ -4,7 +4,6 @@ import org.slf4j.Logger;
 
 import javax.annotation.Nonnull;
 import java.io.File;
-import java.io.IOException;
 import java.util.Scanner;
 
 import static java.lang.Runtime.getRuntime;
@@ -17,24 +16,17 @@ public class FileProcessor {
 
     public void process(@Nonnull String processingFileName, @Nonnull String resultFileName) {
         checkFileExists(processingFileName);
-
         final File file = new File(processingFileName);
-        // TODO: NotImplemented: запускаем FileWriter в отдельном потоке
-
+        final ThreadManager threadManager = new ThreadManager(CHUNK_SIZE, resultFileName);
         try (final Scanner scanner = new Scanner(file, defaultCharset())) {
             while (scanner.hasNext()) {
-                // TODO: NotImplemented: вычитываем CHUNK_SIZE строк для параллельной обработки
-
-                // TODO: NotImplemented: обрабатывать строку с помощью LineProcessor. Каждый поток обрабатывает свою строку.
-
-                // TODO: NotImplemented: добавить обработанные данные в результирующий файл
+                threadManager.fillPoolOfSize(CHUNK_SIZE, scanner);
+                threadManager.joinPool();
             }
-        } catch (IOException exception) {
+        } catch (Exception exception) {
             logger.error("", exception);
         }
-
-        // TODO: NotImplemented: остановить поток writerThread
-
+        threadManager.complete();
         logger.info("Finish main thread {}", Thread.currentThread().getName());
     }
 
